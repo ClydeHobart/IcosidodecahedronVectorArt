@@ -1,0 +1,15 @@
+# Intermediary files
+*.o
+
+# Output files
+main
+*.log
+*.svg
+
+# Output directories
+backups/*
+unionTests/*
+polyMasks/*
+
+# Workspace files
+.vscode/*
