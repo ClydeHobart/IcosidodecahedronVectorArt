@@ -57,7 +57,7 @@ inline void CPolygon::SLoopOriginData::ToOStream(std::ostream& rOStream) const {
 
 	rOStream << std::setw(uIndentSize) << "" << "Old Poly Loops:\n";
 
-	for (const std::pair<u32, std::set<u32>>& rOPLPair : m_OldPolyLoops) {
+	for (const std::pair<const u32, std::set<u32>>& rOPLPair : m_OldPolyLoops) {
 		rOStream << std::setw(2 * uIndentSize) << "" << CPolygon::sm_aOriginStrings[m_LoopOrigins[rOPLPair.first]] << " loop " << rOPLPair.first << ":\n";
 
 		for (u32 uOldPolyLoopIndex : rOPLPair.second) {
@@ -94,7 +94,7 @@ void CPolygon::SLoopData::RemoveConsecutiveColinearVertices() {
 
 		u32 uOVIIndex = 0;
 
-		for (const std::pair<u32, std::set<u32>>& rVertToLoopsPair : m_pOldPolyLoopData->m_VertToLoops) {
+		for (const std::pair<const u32, std::set<u32>>& rVertToLoopsPair : m_pOldPolyLoopData->m_VertToLoops) {
 			oldVertIndices[uOVIIndex++] = rVertToLoopsPair.first;
 		}
 	}
@@ -176,7 +176,7 @@ void CPolygon::SLoopData::RemoveConsecutiveColinearVertices() {
 			}
 		}
 
-		for (const std::pair<u32, std::set<u32>>& rOldVertToLoopsPair : oldVertToLoops) {
+		for (const std::pair<const u32, std::set<u32>>& rOldVertToLoopsPair : oldVertToLoops) {
 			for (u32 uLoopID : rOldVertToLoopsPair.second) {
 				std::set<u32>& rLoopVerts = rLoopToVert[uLoopID];
 
@@ -880,7 +880,7 @@ bool CPolygon::RemoveHiddenLoops(const CPolygon::SLoopOriginData* pLoopOriginDat
 
 	std::swap(inEdgeMap, completeInEdgeMap);
 
-	for (const std::pair<u32, std::set<u32>>& outEdgePair : outEdgeMap) {
+	for (const std::pair<const u32, std::set<u32>>& outEdgePair : outEdgeMap) {
 		for (u32 uOutLoop : outEdgePair.second) {
 			inEdgeMap[uOutLoop].insert(outEdgePair.first);
 		}
@@ -1061,7 +1061,7 @@ bool CPolygon::RemoveHiddenLoops(const CPolygon::SLoopOriginData* pLoopOriginDat
 				hasLoopBeenExamined[uLoopIndex] = true;
 
 				const SSearchData& rPrevSearchData = searchHistory[uDepth - 1];
-				EState ePrevState			= rPrevSearchData.m_eState;
+				u32 ePrevState				= rPrevSearchData.m_eState;
 				const ELoopType eLoopType	= rCurrSearchData.m_eLoopType			= LoopTypeLambda(uLoopIndex);
 				const bool bIsLoopClockwise	= rCurrSearchData.m_bIsLoopClockwise	= m_IsLoopClockwise[uLoopIndex];
 
@@ -1074,11 +1074,11 @@ bool CPolygon::RemoveHiddenLoops(const CPolygon::SLoopOriginData* pLoopOriginDat
 					} case ELoopType::LT_Poly2 : {
 						if (inEdgeMap[uLoopIndex].size() > 1) {
 							for (u32 uInLoopIndex : inEdgeMap[uLoopIndex]) {
-								ePrevState = static_cast<EState>(
+								ePrevState =
 									(m_IsLoopClockwise[uInLoopIndex] ? 
 										ePrevState | LoopTypeLambda(uInLoopIndex) :
 										ePrevState & ~LoopTypeLambda(uInLoopIndex)) &
-									EState::S_Both);
+									EState::S_Both;
 							}
 						} else if (
 							uDepth > 2 &&
@@ -1164,7 +1164,7 @@ bool CPolygon::RemoveHiddenLoops(const CPolygon::SLoopOriginData* pLoopOriginDat
 						break;
 					} case ELoopType::LT_OldP1 : { // Intentional fall-through
 					} case ELoopType::LT_OldP2 : {
-						const u8 uMask = eLoopType & EState::S_Both;
+						const u8 uMask = static_cast<u8>(eLoopType) & EState::S_Both;
 
 						u32 uYoungestNonXingAncestor = uDepth - 1;
 
@@ -1590,14 +1590,14 @@ void CPolygon::ComputeUnion(const CPolygon& rPoly1, const CPolygon& rPoly2, cons
 		g_log << "preliminaryEdgeMap:\n" << fixed << setfill('0') << hex << indent;
 	#endif // DBG_PG_EDGE_MAPS_PRELIM
 
-	for (const std::pair<u32, std::map<f32, u32>>& rEdges : preliminaryEdgeMap) {
+	for (const std::pair<const u32, std::map<f32, u32>>& rEdges : preliminaryEdgeMap) {
 		u32 uPrevIndex = GetTrueVertexLambda(rEdges.first);
 
 		#if DBG_PG_EDGE_MAPS_PRELIM
 			g_log << setw(8) << uPrevIndex << ":\n" << indent;
 		#endif // DBG_PG_EDGE_MAPS_PRELIM
 
-		for (const std::pair<f32, u32>& rVert : rEdges.second) {
+		for (const std::pair<const f32, u32>& rVert : rEdges.second) {
 			const u32 uCurrIndex = GetTrueVertexLambda(rVert.second);
 
 			#if DBG_PG_EDGE_MAPS_PRELIM
@@ -2006,7 +2006,7 @@ void CPolygon::ComputeUnion(const CPolygon& rPoly1, const CPolygon& rPoly2, cons
 
 			if (rLoopData.m_Vertices.size() >= 3) {
 				if (uLoopOrigin == EOrigin::Xings) {
-					for (const std::pair<u32, std::set<u32>>& rLoopToVertsPair : rLoopData.m_pOldPolyLoopData->m_LoopToVerts) {
+					for (const std::pair<const u32, std::set<u32>>& rLoopToVertsPair : rLoopData.m_pOldPolyLoopData->m_LoopToVerts) {
 						oldPolyLoopToXingLoops[rLoopToVertsPair.first].insert(uLoopCount);
 						aOldPolyLoops[rLoopToVertsPair.first >> 16].insert(rLoopToVertsPair.first & u16_MAX);
 					}
@@ -2250,7 +2250,7 @@ void CPolygon::ComputeUnion(const CPolygon& rPoly1, const CPolygon& rPoly2, cons
 			}
 
 			// Re-populate loopOriginData.m_OldPolyLoops
-			for (const std::pair<u32, std::set<u32>>& rOldPolyLoopPair : oldLoopOriginData.m_OldPolyLoops) {
+			for (const std::pair<const u32, std::set<u32>>& rOldPolyLoopPair : oldLoopOriginData.m_OldPolyLoops) {
 				std::set<u32>& rNewMappedSet = loopOriginData.m_OldPolyLoops[oldIndicesToNewIndices[rOldPolyLoopPair.first]];
 
 				for (u32 uValueOldLoopIndex : rOldPolyLoopPair.second) {
