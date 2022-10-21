@@ -90,7 +90,9 @@ I've made some edits for spelling, grammar, concision, and clarity, and added th
 * There's some additional formatting done to the SVG files to make them easier to read/edit in a text editor. Removing this formatting would also reduce file space.
 * It has come to my attention that this concept of φ polynomials is fairly similar to the concept of ["base phi numbers"](https://r-knott.surrey.ac.uk/Fibonacci/phigits.html), a concept coined by George Bergman in 1957. Using the information available online on this topic, a "simplest form" algorithm is very likely possible.
 * ide.geeksforgeeks.org is basically a simpler form of [godbolt.org](https://godbolt.org/).
-* Implementing this in Rust would remove the need for `IntegralTypes.h` and `FloatingTypes.h`, and using the [`glam`](https://docs.rs/glam) crate would remove the need for the `CVector2` and `CVector3` classes.
+* Implementing this in Rust would remove the need for `IntegralTypes.h` and `FloatingTypes.h`.
+  * Using the [`glam`](https://docs.rs/glam) crate would remove the need for the `CVector2` and `CVector3` classes.
+  * Using the [`clap`](https://docs.rs/clap) crate would make it easier to drive the various functionality exposed in `main.cpp` via command line input.
 * Partitioning the possible polygons into 4 sets based on the 4 quadrants of the *xy* plane based on whether or not they had a vertex in that quadrant, then constructing the occlusion mask of each quadrant individually on its own thread would imprmove the overall speed of the culling process.
 
-— Zeke Baker 2022-10-21 00:46 EDT
+— Zeke Baker 2022-10-21 18:56 EDT
