@@ -31,6 +31,8 @@ void SavePolyhedronToSvg(u32 uPrintFlags, u32 uPolyhedron, u32 uPerspective, u32
 		pPolyhedronStr = "Icosidodecahedron";
 		uPolyhedronFlag = CPolyhedron::Icosidodecahedron;
 		break;
+	default:
+		return;
 	}
 
 	CPolyhedron polyhedron(phiPolyhedron);
@@ -48,11 +50,19 @@ void SavePolyhedronToSvg(u32 uPrintFlags, u32 uPolyhedron, u32 uPerspective, u32
 		polyhedron.Focus5FoldSymmetry();
 		pPerspectiveStr = "5FoldSymmetry";
 		break;
+	default:
+		return;
 	}
 
 	std::stringstream ss;
 
-	ss << pPolyhedronStr << '_' << pPerspectiveStr << '_' << uIteration << (uPrintFlags & CPolyhedron::CullHiddenFaces ? "_culled" : "") << ".svg";
+	ss << "images/svg/" <<
+		pPolyhedronStr <<
+		'_' <<
+		pPerspectiveStr <<
+		'_' << uIteration <<
+		(uPrintFlags & CPolyhedron::CullHiddenFaces ? "_culled" : "") <<
+		".svg";
 	polyhedron.SaveToSvg(ss.str(), uPrintFlags | uPolyhedronFlag);
 	std::cout << ss.str() << " saved\n";
 }
@@ -1052,10 +1062,10 @@ s32 main(s32 sArgCount, char* aArgValues[]) {
 		CPolyhedron::Faces |
 		CPolyhedron::Color |
 		CPolyhedron::Depth |
-		CPolyhedron::CullHiddenFaces |
+		// CPolyhedron::CullHiddenFaces |
 		0,
 		2, 3, 4,
-		1, 2, 3);
+		0, 0, 3);
 
 	// TestPolygonUnion(sArgCount, aArgValues);
 
